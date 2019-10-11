@@ -5,6 +5,7 @@ const port = 3000;
 
 const db = require('./src/queries');
 
+app.use(express.static(__dirname + '/webapp') );
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({

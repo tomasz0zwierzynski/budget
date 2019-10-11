@@ -1,0 +1,1 @@
+const NotFound = { template: '<div>NotFound</div>' };

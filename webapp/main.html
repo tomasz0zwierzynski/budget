@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="Tomasz Zwierzyński">
+
+  <title>Budger</title>
+
+  <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="app">
+        <h1>Hello App!</h1>
+        <p>
+            <router-link to="/dashboard">Dashboard</router-link>
+            <router-link to="/budgets">Budget</router-link>
+            <router-link to="/subscriptions">Subscriptions</router-link>
+            <router-link to="/settings">Settings</router-link>
+        </p>
+        <router-view></router-view>
+    </div>
+
+  <script src="libs/jquery/jquery.min.js"></script>
+  <script src="libs/bootstrap/js/bootstrap.min.js"></script>
+
+  <script src="libs/vue/vue.js"></script>
+  <script src="libs/vue/vue-router.js"></script>
+
+  <script src="services/api.js"></script>
+
+  <script src="components/budgets.js"></script>
+  <script src="components/dashboard.js"></script>
+  <script src="components/not-found.js"></script>
+  <script src="components/settings.js"></script>
+  <script src="components/subscriptions.js"></script>
+  
+  <script src="main.js"></script>
+
+</body>
+
+</html>

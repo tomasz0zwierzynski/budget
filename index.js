@@ -14,7 +14,7 @@ app.use(
 );
 
 app.get('/', (request, response) => {
-    response.json({ info: 'Node.js, Express, and Postgres API' })
+    response.sendFile(__dirname + '/webapp/main.html');
 });
 
 app.get('/users', db.getUsers);
@@ -27,7 +27,16 @@ app.put('/users/:id', db.updateUser);
 
 app.delete('/users/:id', db.deleteUser);
 
+const budgetRepo = require('./src/repos/budgets');
 
+app.get('/api/get-budget/:year/:month', (request, response) => {
+    const year = parseInt(request.params.year);
+    const month = parseInt(request.params.month);
+
+    budgetRepo.getBudgetById(2).then( res => {
+        response.json(res);
+    });
+});
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)

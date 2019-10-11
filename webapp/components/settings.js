@@ -1,0 +1,1 @@
+const Settings = { template: '<div>settings</div>' };

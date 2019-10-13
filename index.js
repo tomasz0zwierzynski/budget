@@ -28,14 +28,38 @@ app.put('/users/:id', db.updateUser);
 app.delete('/users/:id', db.deleteUser);
 
 const budgetRepo = require('./src/repos/budgets');
+const userRepo = require('./src/repos/users');
+const positionsRepo = require('./src/repos/positions');
 
 app.get('/api/get-budget/:year/:month', (request, response) => {
     const year = parseInt(request.params.year);
     const month = parseInt(request.params.month);
 
-    budgetRepo.getBudgetById(2).then( res => {
-        response.json(res);
+    // TODO: from header token get user!
+    // userRepo.getUserById(2).then( res => {
+        
+    // });
+
+    // TODO: poładnić tą metodę
+    budgetRepo.getBudgetByUserMonthYear(1, month, year).then( budget => {        
+        
+        positionsRepo.getPositonsByBudget( budget[0].id ).then( positions => {
+            response.json(
+                {
+                    id: budget[0].id,
+                    user: {},
+                    month: month,
+                    year: year,
+                    positions: positions
+                }
+            );
+        }).catch( err => {
+            response.status(404).send(err);
+        });
+    }).catch( err0 => {
+        response.status(404).send(err0);  
     });
+
 });
 
 app.listen(port, () => {

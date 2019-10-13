@@ -11,7 +11,14 @@ const getPositionById = function (id) {
         'SELECT * FROM positions WHERE id = $1',
         [id]
     ).then(res => res.rows);
-}
+};
+
+const getPositonsByBudget = function (budgetid) {
+    return pool.query(
+        'SELECT * FROM positions WHERE budgetid = $1',
+        [budgetid]
+    ).then( res => res.rows);
+};
 
 const createPosition = function (position) {
     const { budgetid, title, description, planned, actual, priority } = position;
@@ -42,5 +49,6 @@ module.exports = {
     getPositionById,
     createPosition,
     updatePosition,
-    deletePosition
+    deletePosition,
+    getPositonsByBudget
 }

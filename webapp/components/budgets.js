@@ -1,11 +1,20 @@
 Vue.component('budget-position', {
     template: `
-        <div class="d-inline">
-            <h5 v-if="position.active">V</h5>
+        <tr>
+            <th scope="row">
+                <h5 v-if="position.active">V</h5>
+            </th>
+            <td>
             <h5 v-if="!labelEdit" v-on:dblclick="labelEdit=true"> {{position.label}} </h5>
             <input v-if="labelEdit" v-model="labelProto"> <button v-if="labelEdit" v-on:click="position.label = labelProto; labelProto = ''; labelEdit=false"> OK </button>
-            <p> {{position.actual}} / {{position.planned}} </p>
-        </div>
+            </td>
+            <td>
+            <p> {{position.actual}} </p>
+            </td>
+            <td>
+            <p> {{position.planned}} </p>
+            </td>
+        </tr>
     `,
     props: [ 'position' ],
     data: function () {
@@ -20,14 +29,28 @@ Vue.component('budget-position', {
 
 Vue.component('budget-positions', {
     template: `
-        <div>
-        <h4> Budget positions </h4>
-        <budget-position
-            v-for="position in positions"
-            v-bind:key="position.id"
-            v-bind:position="position"
-            v-on:changed="childChanged($event)"
-        ></budget-position>
+        <div class="row">
+            <div class="col-12">
+            <h4> Budget positions </h4>
+            <table class="table">
+            <thead>
+    <tr>
+      <th scope="col">Active</th>
+      <th scope="col">Label</th>
+      <th scope="col">Actual</th>
+      <th scope="col">Planned</th>
+    </tr>
+    </thead>
+             <tbody>   
+                <budget-position
+                v-for="position in positions"
+                v-bind:key="position.id"
+                v-bind:position="position"
+                v-on:changed="childChanged($event)"
+                ></budget-position>
+                </tbody>
+        </table>
+        </div>
         </div>
     `,
     props: [ 'positions' ],
@@ -39,7 +62,7 @@ Vue.component('budget-positions', {
 })
 
 const Budgets = { 
-    template: ` <div>
+    template: ` <div class="container">
                 <budget-positions
                     v-bind:positions="examplePositions"
                 ></budget-positions></div> `,

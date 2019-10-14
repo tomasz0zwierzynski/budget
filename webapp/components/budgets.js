@@ -1,17 +1,17 @@
 Vue.component('budget-position', {
     template: `
         <tr>
-            <th scope="row">
+            <th scope="row" class="w-25">
                 <h5 v-if="position.active">V</h5>
             </th>
             <td>
             <h5 v-if="!labelEdit" v-on:dblclick="labelEdit=true"> {{position.label}} </h5>
             <input v-if="labelEdit" v-model="labelProto"> <button v-if="labelEdit" v-on:click="position.label = labelProto; labelProto = ''; labelEdit=false"> OK </button>
             </td>
-            <td>
+            <td class="w-12">
             <p> {{position.actual}} </p>
             </td>
-            <td>
+            <td class="w-12">
             <p> {{position.planned}} </p>
             </td>
         </tr>
@@ -29,10 +29,8 @@ Vue.component('budget-position', {
 
 Vue.component('budget-positions', {
     template: `
-        <div class="row">
-            <div class="col-12">
-            <h4> Budget positions </h4>
-            <table class="table">
+
+            <table class="table table-striped table-sm">
             <thead>
     <tr>
       <th scope="col">Active</th>
@@ -50,8 +48,7 @@ Vue.component('budget-positions', {
                 ></budget-position>
                 </tbody>
         </table>
-        </div>
-        </div>
+
     `,
     props: [ 'positions' ],
     data: function () {
@@ -63,9 +60,14 @@ Vue.component('budget-positions', {
 
 const Budgets = { 
     template: ` <div class="container">
+    <div class="row">
+    <div class="col-12">
+    <h4> Budget positions </h4>
                 <budget-positions
                     v-bind:positions="examplePositions"
-                ></budget-positions></div> `,
+                ></budget-positions></div> 
+    </div>
+    </div>`,
     
     data: function () {
         return {

@@ -6,6 +6,15 @@
     width: 20%
 }
 
+.w-60 {
+    width: 60%
+}
+
+.position-bottom {
+    position: absolute;
+    bottom: 0;
+}
+
 input[type=checkbox] {
   /* Double-sized Checkboxes */
   -ms-transform: scale(1.5); /* IE */

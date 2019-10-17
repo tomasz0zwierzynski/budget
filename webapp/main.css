@@ -15,6 +15,10 @@
     bottom: 0;
 }
 
+.lightup-hover:hover {
+    color: gray !important;
+}
+
 input[type=checkbox] {
   /* Double-sized Checkboxes */
   -ms-transform: scale(1.5); /* IE */

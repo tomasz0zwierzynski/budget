@@ -3,13 +3,13 @@ Vue.component('budget-position', {
         <tr>
             <th scope="w-auto row">
                 <div class="form-check m-1">
-                    <input class="form-check-input position-static" type="checkbox" v-model="position.active">
+                    <input class="form-check-input position-static" type="checkbox" v-model="position.active" v-on:change="$emit('modified', position)">
                 </div>
             </th>
             <td class="w-60">
 
                 <div class="form-control form-control-sm" v-bind:class="{ 'border-light': !position.active }" v-if="!labelEdit" v-on:click="labelClick()">
-                    <div>
+                    <div v-bind:class="{ 'text-muted': !position.active }">
                         {{position.label}}
                     </div>
                 </div>
@@ -26,7 +26,7 @@ Vue.component('budget-position', {
 
                 <div class="input-group input-group-sm"  v-if="!actualEdit">
                     <div class="form-control form-control-sm" v-bind:class="{ 'border-light': !position.active }" v-on:click="actualClick()">
-                        <div v-bind:class="{ 'text-success': config.positive, 'text-danger': !config.positive }">    
+                        <div v-bind:class="{ 'text-success': config.positive && position.active, 'text-danger': !config.positive && position.active, 'text-muted': !position.active }">    
                             {{position.actual}}
                         </div>
                     </div>
@@ -36,7 +36,7 @@ Vue.component('budget-position', {
                 </div>
 
                 <div class="input-group input-group-sm" v-if="actualEdit">
-                    <input ref="actualInput" type="number" class="form-control form-control-sm" v-on:keyup.enter="actualProtoOkClick()" v-model="actualProto">    
+                    <input ref="actualInput" type="number" min="0" class="form-control form-control-sm" v-on:keyup.enter="actualProtoOkClick()" v-model="actualProto">    
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary btn-sm" type="button" v-on:click="actualProtoOkClick()"><i class="fas fa-check"></i></button>
                     </div>
@@ -45,18 +45,22 @@ Vue.component('budget-position', {
             <td class="w-20">
 
                 <div class="form-control form-control-sm" v-bind:class="{ 'border-light': !position.active }" v-if="!plannedEdit" v-on:click="plannedClick()">
-                    <div v-bind:class="{ 'text-success': config.positive, 'text-danger': !config.positive }">
+                    <div v-bind:class="{ 'text-success': config.positive && position.active, 'text-danger': !config.positive && position.active, 'text-muted': !position.active }">
                         {{position.planned}}
                     </div>
                 </div>
 
                 <div class="input-group input-group-sm" v-if="plannedEdit">
-                    <input ref="plannedInput" type="number" class="form-control form-control-sm" v-on:keyup.enter="plannedProtoOkClick()" v-model="plannedProto">
+                    <input ref="plannedInput" type="number" min="0" class="form-control form-control-sm" v-on:keyup.enter="plannedProtoOkClick()" v-model="plannedProto">
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary btn-sm" type="button" v-on:click="plannedProtoOkClick()"><i class="fas fa-check"></i></button>
                     </div>
                 </div>
-                
+            </td>
+            <td class="w-auto">
+                <div class="mt-1" v-on:click="$emit('removed')"> 
+                    <i class="fas fa-trash text-light lightup-hover"></i>
+                </div>
             </td>
         </tr>
     `,
@@ -71,7 +75,7 @@ Vue.component('budget-position', {
             plannedEdit: false
         };
     },
-    methods: {
+    methods: { // TODO: dodać walidację
         labelClick: function () {
             this.dismissEdit();
             this.labelEdit = true;
@@ -83,6 +87,7 @@ Vue.component('budget-position', {
         labelProtoOkClick: function () {
             this.position.label = this.labelProto;
             this.labelEdit = false;
+            this.$emit('modified', this.position);
         },
         actualClick: function () {
             this.dismissEdit();
@@ -99,6 +104,7 @@ Vue.component('budget-position', {
             }
             this.position.actual = this.actualProto;
             this.actualEdit = false;
+            this.$emit('modified', this.position);
         },
         plannedClick: function () {
             this.dismissEdit();
@@ -111,6 +117,7 @@ Vue.component('budget-position', {
         plannedProtoOkClick: function () {
             this.position.planned = this.plannedProto;
             this.plannedEdit = false;
+            this.$emit('modified', this.position);
         },
         bumpActual: function () {
             this.position.actual = this.position.planned;
@@ -137,6 +144,7 @@ Vue.component('budget-positions', {
                 <th scope="col">Tytuł</th>
                 <th scope="col">Obecnie</th>
                 <th scope="col">Wartość</th>
+                <th scope="col"></th>
             </tr>
             </thead>
             <tbody>   
@@ -146,7 +154,15 @@ Vue.component('budget-positions', {
                     v-bind:key="position.id"
                     v-bind:position="position"
                     v-bind:config="getPositionConfig()"
-                    v-on:editing="$refs.budgetPosition.forEach( (b, i) => { if (index !== i) { b.dismissEdit(); } } )"
+                    v-on:editing="$refs.budgetPosition.forEach( (b, i) => { if (index !== i) { b.dismissEdit(); } } ); $refs.newBudgetPosition.dismissEdit()"
+                    v-on:removed="positions.splice(index, 1)"
+                ></budget-position>
+                <budget-position
+                    ref="newBudgetPosition"
+                    v-bind:position="newPosition"
+                    v-bind:config="getPositionConfig()"
+                    v-on:modified="newPositionModified($event)"
+                    v-on:editing="$refs.budgetPosition.forEach( b => b.dismissEdit() )"
                 ></budget-position>
             </tbody>
         </table>
@@ -160,6 +176,7 @@ Vue.component('budget-positions', {
     props: [ 'positions', 'config' ],
     data: function () {
         return {
+            newPosition: { id: null, active: false, label: '', description: '', actual: null, planned: null }
         };
     },
     computed: {
@@ -188,6 +205,12 @@ Vue.component('budget-positions', {
                 return { positive: true };
             } else {
                 return { positive: false };
+            }
+        },
+        newPositionModified: function (val) {
+            if ( val.active && val.label.length > 0 && val.actual > 0 && val.planned > 0 ) {
+                this.positions.push(val);
+                this.newPosition = { id: null, active: false, label: '', description: '', actual: null, planned: null };
             }
         }
     }

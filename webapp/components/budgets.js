@@ -6,7 +6,7 @@ Vue.component('budget-position', {
                     <input class="form-check-input position-static" type="checkbox" v-model="position.active" v-on:change="$emit('modified', position)">
                 </div>
             </th>
-            <td class="w-60">
+            <td class="w-50">
 
                 <div class="form-control form-control-sm" v-bind:class="{ 'border-light': !position.active }" v-if="!labelEdit" v-on:click="labelClick()">
                     <div v-bind:class="{ 'text-muted': !position.active }">
@@ -17,7 +17,7 @@ Vue.component('budget-position', {
                 <div class="input-group input-group-sm" v-if="labelEdit">
                     <input ref="labelInput" type="text" class="form-control form-control-sm" v-if="labelEdit" v-on:keyup.enter="labelProtoOkClick()" v-model="labelProto">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary btn-sm"  type="button" v-if="labelEdit" v-on:click="labelProtoOkClick()"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-outline-secondary btn-sm p-1"  type="button" v-if="labelEdit" v-on:click="labelProtoOkClick()"><i class="fas fa-check"></i></button>
                     </div>
                 </div>
 
@@ -28,19 +28,22 @@ Vue.component('budget-position', {
                     <div class="form-control form-control-sm" v-bind:class="{ 'border-light': !position.active }" v-on:click="actualClick()">
                         <div v-bind:class="{ 'text-success': config.positive && position.active, 'text-danger': !config.positive && position.active, 'text-muted': !position.active }">    
                             {{position.actual}}
-                        </div>
-                    </div>
-                    <div class="input-group-append" v-bind:class="{ 'border-light': !position.active }">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:class="{ 'border-light': !position.active }" v-on:click="bumpActual()"><i class="fas fa-level-up-alt"></i></button>
+                        </div>   
+
                     </div>
                 </div>
 
                 <div class="input-group input-group-sm" v-if="actualEdit">
-                    <input ref="actualInput" type="number" min="0" class="form-control form-control-sm" v-on:keyup.enter="actualProtoOkClick()" v-model="actualProto">    
+                    <input ref="actualInput" type="number" min="0" class="form-control form-control-sm p-1" v-on:keyup.enter="actualProtoOkClick()" v-model="actualProto">    
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" v-on:click="actualProtoOkClick()"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-outline-secondary btn-sm p-1" type="button" v-on:click="actualProtoOkClick()"><i class="fas fa-check"></i></button>
                     </div>
                 </div>
+            </td>
+            <td class="w-auto">
+                <div class="mt-1" v-on:click="bumpActual()"> 
+                    <i class="fas fa-level-up-alt text-light lightup-hover"></i>
+                </div> 
             </td>
             <td class="w-20">
 
@@ -51,9 +54,9 @@ Vue.component('budget-position', {
                 </div>
 
                 <div class="input-group input-group-sm" v-if="plannedEdit">
-                    <input ref="plannedInput" type="number" min="0" class="form-control form-control-sm" v-on:keyup.enter="plannedProtoOkClick()" v-model="plannedProto">
+                    <input ref="plannedInput" type="number" min="0" class="form-control form-control-sm p-1" v-on:keyup.enter="plannedProtoOkClick()" v-model="plannedProto">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" v-on:click="plannedProtoOkClick()"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-outline-secondary btn-sm p-1" type="button" v-on:click="plannedProtoOkClick()"><i class="fas fa-check"></i></button>
                     </div>
                 </div>
             </td>
@@ -137,12 +140,13 @@ Vue.component('budget-position', {
 Vue.component('budget-positions', {
     template: /*html*/ `
     <div>
-        <table class="table table-sm">
+        <table class="table table-responsive-md table-sm">
             <thead>
             <tr>
                 <th scope="col"></th>
                 <th scope="col">Tytuł</th>
                 <th scope="col">Obecnie</th>
+                <th scole="col"></th>
                 <th scope="col">Wartość</th>
                 <th scope="col"></th>
             </tr>
@@ -221,8 +225,8 @@ const Budgets = {
     <div class="container-fluid">
         <h4> Budget positions </h4>
         <div class="row">
-            <div class="col-lg-6">
-                <div class="card mb-2 h-100">
+            <div class="col-lg-6 mb-2">
+                <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Wpływy</h5>
                         <budget-positions
@@ -232,8 +236,8 @@ const Budgets = {
                     </div>
                 </div>
             </div> 
-            <div class="col-lg-6">
-                <div class="card mb-2 h-100">
+            <div class="col-lg-6 mb-2">
+                <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Wypływy</h5>
                         <budget-positions

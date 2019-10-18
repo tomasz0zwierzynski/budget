@@ -118,8 +118,11 @@ Vue.component('budget-position', {
             });
         },
         plannedProtoOkClick: function () {
-            this.position.planned = this.plannedProto;
+            this.position.planned = parseInt(this.plannedProto);
             this.plannedEdit = false;
+            if ( !this.position.actual ) {
+                this.position.actual = 0;
+            }
             this.$emit('modified', this.position);
         },
         bumpActual: function () {
@@ -169,10 +172,10 @@ Vue.component('budget-positions', {
                     v-on:editing="$refs.budgetPosition.forEach( b => b.dismissEdit() )"
                 ></budget-position>
             </tbody>
-        </table>
+        </table>     
 
         <div class="position-bottom mb-2">
-            Suma: {{actualSum}} Total: {{plannedSum}}
+        {{actualSum}} / {{plannedSum}}
         </div>
 
     </div>
@@ -212,7 +215,7 @@ Vue.component('budget-positions', {
             }
         },
         newPositionModified: function (val) {
-            if ( val.active && val.label.length > 0 && val.actual > 0 && val.planned > 0 ) {
+            if ( val.active && val.label.length > 0 && val.actual >= 0 && val.planned > 0 ) {
                 this.positions.push(val);
                 this.newPosition = { id: null, active: false, label: '', description: '', actual: null, planned: null };
             }
@@ -220,10 +223,23 @@ Vue.component('budget-positions', {
     }
 });
 
+Vue.component('month-select', {
+    template: /*html*/ `
+    <div>
+        <input type="date">
+    </div>
+    `
+});
+
 const Budgets = { 
     template: /*html*/ `
     <div class="container-fluid">
         <h4> Budget positions </h4>
+        <div class="row">
+            <div class="col-lg-6 mb-2">
+                <month-select></month-select>
+            </div>
+        </div>
         <div class="row">
             <div class="col-lg-6 mb-2">
                 <div class="card h-100">

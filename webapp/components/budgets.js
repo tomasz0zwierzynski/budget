@@ -225,10 +225,83 @@ Vue.component('budget-positions', {
 
 Vue.component('month-select', {
     template: /*html*/ `
-    <div>
-        <input type="date">
+    <div class="form-group form-group-sm row">
+        <div class="col-4">
+            <select class="form-control form-control-sm" ref="monthSelect" v-on:change="monthChanged($event)">
+                <option v-for="month in months"> {{month.n}}: {{month.name}} </option>
+            </select>
+        </div>
+
+        <div class="col-4">
+            <select class="form-control form-control-sm" ref="yearSelect" v-on:change="yearChanged($event)">
+                <option v-for="year in years"> {{year}} </option>
+            </select>
+        </div>
+
+        <div class="col-4 input-group input-group-sm">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary btn-sm" type="button" v-on:click="left()"><i class="fas fa-angle-left"></i></button>
+            </div>
+            <div class="form-control form-control-sm text-center">
+                    {{selected.month}}.{{selected.year}}
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary btn-sm" type="button" v-on:click="right()"><i class="fas fa-angle-right"></i></button>
+            </div>
+        </div>
     </div>
-    `
+    `,
+    props: ['selected'],
+    data: function () {
+        return {
+            months: [
+                { name: 'Styczeń', n: 1 }, { name: 'Luty', n: 2 }, { name: 'Marzec', n: 3 }, { name: 'Kwiecień', n: 4 }, { name: 'Maj', n: 5 }, { name: 'Czerwiec', n: 6 },
+                { name: 'Lipiec', n: 7 }, { name: 'Sierpień', n: 8 }, { name: 'Wrzesień', n: 9 }, { name: 'Październik', n: 10 }, { name: 'Listopad', n: 11 }, { name: 'Grudzień', n: 12 }
+            ],
+            years: Array.from( Array(20), (x, index) => 2019 + index * 1)
+        };
+    },
+    methods: {
+        left: function () {
+            if ( this.selected.month > 1 ) {
+                this.selected.month--;
+            } else {
+                if ( this.selected.year > 2019 ) {
+                    this.selected.month = 12;
+                    this.selected.year--;
+                }
+            }
+            this.updateSelects();
+            this.$emit('modified', this.selected);
+        },
+        right: function () {
+            if ( this.selected.month < 12 ) {
+                this.selected.month++;
+            } else {
+                if ( this.selected.year < 2038 ) {
+                    this.selected.month = 1;
+                    this.selected.year++;
+                }
+            }
+            this.updateSelects();
+            this.$emit('modified', this.selected);
+        },
+        monthChanged: function (event) {
+            this.selected.month = parseInt(event.target.value);
+            this.$emit('modified', this.selected);
+        },
+        yearChanged: function (event) {
+            this.selected.year = parseInt(event.target.value);
+            this.$emit('modified', this.selected);
+        },
+        updateSelects: function () {
+            this.$refs.yearSelect.value = this.selected.year;
+            this.$refs.monthSelect.value = this.months[this.selected.month - 1].n + ': ' + this.months[this.selected.month - 1].name;
+        }
+    },
+    mounted: function () {
+        this.updateSelects();
+    }
 });
 
 const Budgets = { 
@@ -237,7 +310,7 @@ const Budgets = {
         <h4> Budget positions </h4>
         <div class="row">
             <div class="col-lg-6 mb-2">
-                <month-select></month-select>
+                <month-select v-bind:selected="currentMonth" v-on:modified="test($event)"></month-select>
             </div>
         </div>
         <div class="row">
@@ -271,7 +344,8 @@ const Budgets = {
             positivePositions: [],
             negativePositions: [],
             positiveConfig: { positive: true },
-            negativeConfig: { positive: false }
+            negativeConfig: { positive: false },
+            currentMonth: { year: 2025, month: 6 } 
         }
     }, // TODO: przyzapisywaniu do bazy pamietac, zeby negatywne zapisac z minusem
     created: function () {
@@ -285,5 +359,10 @@ const Budgets = {
             pos.planned = Math.abs(pos.planned);
             pos.actual = Math.abs(pos.actual);
         });
+    },
+    methods: {
+        test: function (arg) {
+            console.log(arg);
+        }
     }
 };

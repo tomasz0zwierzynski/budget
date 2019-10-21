@@ -362,7 +362,7 @@ const Budgets = {
     },
     methods: {
         test: function (arg) {
-            console.log(arg);
+            // console.log(arg);
         }
     }
 };

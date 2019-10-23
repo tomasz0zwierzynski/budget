@@ -310,10 +310,10 @@ const Budgets = {
         <h4> Budget positions </h4>
         <div class="row">
             <div class="col-lg-6 mb-2">
-                <month-select v-bind:selected="currentMonth" v-on:modified="test($event)"></month-select>
+                <month-select v-bind:selected="currentMonth" v-on:modified="monthChanged($event)"></month-select>
             </div>
         </div>
-        <div class="row">
+        <div v-if="budgetPresent" class="row">
             <div class="col-lg-6 mb-2">
                 <div class="card h-100">
                     <div class="card-body">
@@ -337,6 +337,9 @@ const Budgets = {
                 </div>
             </div>    
         </div>
+        <div v-if="!budgetPresent" class="row">
+            Budget is not present
+        </div>
     </div>
     `,
     data: function () {
@@ -345,24 +348,38 @@ const Budgets = {
             negativePositions: [],
             positiveConfig: { positive: true },
             negativeConfig: { positive: false },
-            currentMonth: { year: 2025, month: 6 } 
+            currentMonth: { year: 2025, month: 6 },
+            budgetPresent: false
         }
     }, // TODO: przyzapisywaniu do bazy pamietac, zeby negatywne zapisac z minusem
     created: function () {
-        let positions = getBudget0().positions;
-        positions.forEach( pos => {
-            if (pos.planned >= 0) {
-                this.positivePositions.push( pos );
-            } else {
-                this.negativePositions.push( pos );
-            }
-            pos.planned = Math.abs(pos.planned);
-            pos.actual = Math.abs(pos.actual);
-        });
+        let now = new Date();
+        this.currentMonth = { year: now.getFullYear(), month: now.getMonth() + 1}
+        this.loadBudget( now.getFullYear(), now.getMonth() + 1 );
     },
     methods: {
-        test: function (arg) {
-            // console.log(arg);
+        monthChanged: function ( month ) {
+            this.loadBudget( month.year, month.month );
+        },
+        loadBudget: function ( year, month ) {
+            let budget = getBudget0( year, month );
+            if ( budget ) {
+                let positions = budget.positions;
+                this.positivePositions = [];
+                this.negativePositions = [];
+                positions.forEach( pos => {
+                    if (pos.planned >= 0) {
+                        this.positivePositions.push( pos );
+                    } else {
+                        this.negativePositions.push( pos );
+                    }
+                    pos.planned = Math.abs(pos.planned);
+                    pos.actual = Math.abs(pos.actual);
+                });
+                this.budgetPresent = true;
+            } else {
+                this.budgetPresent = false;
+            }
         }
     }
 };

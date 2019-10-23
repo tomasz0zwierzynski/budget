@@ -8,16 +8,16 @@ Vue.component('subscription-position', {
     </th>
     <td class="w-60">
 
-        <div class="form-control form-control-sm" v-bind:class="{ 'border-light': !position.active }" v-if="!labelEdit" v-on:click="labelClick()">
+        <div class="form-control form-control-sm" v-bind:class="{ 'border-light': !position.active }" v-if="!titleEdit" v-on:click="titleClick()">
             <div v-bind:class="{ 'text-muted': !position.active }">
-                {{position.label}}
+                {{position.title}}
             </div>
         </div>
 
-        <div class="input-group input-group-sm" v-if="labelEdit">
-            <input ref="labelInput" type="text" class="form-control form-control-sm" v-if="labelEdit" v-on:keyup.enter="labelProtoOkClick()" v-model="labelProto">
+        <div class="input-group input-group-sm" v-if="titleEdit">
+            <input ref="titleInput" type="text" class="form-control form-control-sm" v-if="titleEdit" v-on:keyup.enter="titleProtoOkClick()" v-model="titleProto">
             <div class="input-group-append">
-                <button class="btn btn-outline-secondary btn-sm p-1"  type="button" v-if="labelEdit" v-on:click="labelProtoOkClick()"><i class="fas fa-check"></i></button>
+                <button class="btn btn-outline-secondary btn-sm p-1"  type="button" v-if="titleEdit" v-on:click="titleProtoOkClick()"><i class="fas fa-check"></i></button>
             </div>
         </div>
 
@@ -48,24 +48,24 @@ Vue.component('subscription-position', {
     props: [ 'position', 'config' ],
     data: function () {
         return {
-            labelProto: this.position.label,
-            labelEdit: false,
+            titleProto: this.position.title,
+            titleEdit: false,
             quantityProto: this.position.quantity,
             quantityEdit: false
         };
     },
     methods: {
-        labelClick: function () {
+        titleClick: function () {
             this.dismissEdit();
-            this.labelEdit = true;
+            this.titleEdit = true;
             Vue.nextTick( () => {
-                this.$refs.labelInput.focus();
+                this.$refs.titleInput.focus();
                 this.$emit('editing');
             });
         },
-        labelProtoOkClick: function () {
-            this.position.label = this.labelProto;
-            this.labelEdit = false;
+        titleProtoOkClick: function () {
+            this.position.title = this.titleProto;
+            this.titleEdit = false;
             this.$emit('modified', this.position);
         },
         quantityClick: function () {
@@ -85,8 +85,8 @@ Vue.component('subscription-position', {
             this.$emit('modified', this.position);
         },
         dismissEdit: function () {
-            this.labelProto = this.position.label;
-            this.labelEdit = false;
+            this.titleProto = this.position.title;
+            this.titleEdit = false;
             this.actualProto = this.position.actual;
             this.actualEdit = false;
             this.quantityProto = this.position.quantity;
@@ -136,7 +136,7 @@ Vue.component('subscription-positions', {
     props: [ 'positions', 'config' ],
     data: function () {
         return {
-            newPosition: { id: null, active: false, label: '', description: '', quantity: null }
+            newPosition: { id: null, active: false, title: '', description: '', quantity: null }
         };
     },
     computed: {
@@ -159,9 +159,9 @@ Vue.component('subscription-positions', {
             }
         },
         newPositionModified: function (val) {
-            if ( val.active && val.label.length > 0  && val.quantity > 0 ) {
+            if ( val.active && val.title.length > 0  && val.quantity > 0 ) {
                 this.positions.push(val);
-                this.newPosition = { id: null, active: false, label: '', description: '', quantity: null };
+                this.newPosition = { id: null, active: false, title: '', description: '', quantity: null };
             }
         }
     }

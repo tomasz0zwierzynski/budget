@@ -8,16 +8,16 @@ Vue.component('budget-position', {
             </th>
             <td class="w-50">
 
-                <div class="form-control form-control-sm" v-bind:class="{ 'border-light': !position.active }" v-if="!labelEdit" v-on:click="labelClick()">
+                <div class="form-control form-control-sm" v-bind:class="{ 'border-light': !position.active }" v-if="!titleEdit" v-on:click="titleClick()">
                     <div v-bind:class="{ 'text-muted': !position.active }">
-                        {{position.label}}
+                        {{position.title}}
                     </div>
                 </div>
 
-                <div class="input-group input-group-sm" v-if="labelEdit">
-                    <input ref="labelInput" type="text" class="form-control form-control-sm" v-if="labelEdit" v-on:keyup.enter="labelProtoOkClick()" v-model="labelProto">
+                <div class="input-group input-group-sm" v-if="titleEdit">
+                    <input ref="titleInput" type="text" class="form-control form-control-sm" v-if="titleEdit" v-on:keyup.enter="titleProtoOkClick()" v-model="titleProto">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary btn-sm p-1"  type="button" v-if="labelEdit" v-on:click="labelProtoOkClick()"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-outline-secondary btn-sm p-1"  type="button" v-if="titleEdit" v-on:click="titleProtoOkClick()"><i class="fas fa-check"></i></button>
                     </div>
                 </div>
 
@@ -70,8 +70,8 @@ Vue.component('budget-position', {
     props: [ 'position', 'config' ],
     data: function () {
         return {
-            labelProto: this.position.label,
-            labelEdit: false,
+            titleProto: this.position.title,
+            titleEdit: false,
             actualProto: this.position.actual,
             actualEdit: false,
             plannedProto: this.position.planned,
@@ -79,17 +79,17 @@ Vue.component('budget-position', {
         };
     },
     methods: { // TODO: dodać walidację
-        labelClick: function () {
+        titleClick: function () {
             this.dismissEdit();
-            this.labelEdit = true;
+            this.titleEdit = true;
             Vue.nextTick( () => {
-                this.$refs.labelInput.focus();
+                this.$refs.titleInput.focus();
                 this.$emit('editing');
             });
         },
-        labelProtoOkClick: function () {
-            this.position.label = this.labelProto;
-            this.labelEdit = false;
+        titleProtoOkClick: function () {
+            this.position.title = this.titleProto;
+            this.titleEdit = false;
             this.$emit('modified', this.position);
         },
         actualClick: function () {
@@ -130,8 +130,8 @@ Vue.component('budget-position', {
             this.actualProto = this.plannedProto;
         },
         dismissEdit: function () {
-            this.labelProto = this.position.label;
-            this.labelEdit = false;
+            this.titleProto = this.position.title;
+            this.titleEdit = false;
             this.actualProto = this.position.actual;
             this.actualEdit = false;
             this.plannedProto = this.position.planned;
@@ -183,7 +183,7 @@ Vue.component('budget-positions', {
     props: [ 'positions', 'config' ],
     data: function () {
         return {
-            newPosition: { id: null, active: false, label: '', description: '', actual: null, planned: null }
+            newPosition: { id: null, active: false, title: '', description: '', actual: null, planned: null }
         };
     },
     computed: {
@@ -215,9 +215,9 @@ Vue.component('budget-positions', {
             }
         },
         newPositionModified: function (val) {
-            if ( val.active && val.label.length > 0 && val.actual >= 0 && val.planned > 0 ) {
+            if ( val.active && val.title.length > 0 && val.actual >= 0 && val.planned > 0 ) {
                 this.positions.push(val);
-                this.newPosition = { id: null, active: false, label: '', description: '', actual: null, planned: null };
+                this.newPosition = { id: null, active: false, title: '', description: '', actual: null, planned: null };
             }
         }
     }
@@ -362,12 +362,12 @@ const Budgets = {
             this.loadBudget( month.year, month.month );
         },
         loadBudget: function ( year, month ) {
-            let budget = getBudget0( year, month );
-            if ( budget ) {
-                let positions = budget.positions;
-                this.positivePositions = [];
-                this.negativePositions = [];
-                positions.forEach( pos => {
+            getBudget( year, month ).then( budget => {
+                if ( budget ) {
+                    let positions = budget.positions;
+                    this.positivePositions = [];
+                    this.negativePositions = [];
+                    positions.forEach( pos => {
                     if (pos.planned >= 0) {
                         this.positivePositions.push( pos );
                     } else {
@@ -375,11 +375,14 @@ const Budgets = {
                     }
                     pos.planned = Math.abs(pos.planned);
                     pos.actual = Math.abs(pos.actual);
-                });
-                this.budgetPresent = true;
-            } else {
+                    });
+                    this.budgetPresent = true;
+                } else {
+                    this.budgetPresent = false;
+                }
+            } ).catch( err => {
                 this.budgetPresent = false;
-            }
+            } );
         }
     }
 };

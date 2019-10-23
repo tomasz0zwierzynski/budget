@@ -40,7 +40,7 @@ app.get('/api/get-budget/:year/:month', (request, response) => {
         
     // });
 
-    // TODO: poładnić tą metodę
+    // TODO: poładnić tą metodę, dodać obsługę userów
     budgetRepo.getBudgetByUserMonthYear(1, month, year).then( budget => {        
         
         positionsRepo.getPositonsByBudget( budget[0].id ).then( positions => {

@@ -21,18 +21,18 @@ const getPositonsByBudget = function (budgetid) {
 };
 
 const createPosition = function (position) {
-    const { budgetid, title, description, planned, actual, priority } = position;
+    const { budgetid, title, description, planned, actual, priority, active } = position;
     return pool.query(
-        'INSERT INTO positions (budgetid, title, description, planned, actual, priority ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, budgetid, title, description, planned, actual, priority ',
-        [budgetid, title, description, planned, actual, priority ]
+        'INSERT INTO positions (budgetid, title, description, planned, actual, priority, active ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, budgetid, title, description, planned, actual, priority, active ',
+        [budgetid, title, description, planned, actual, priority, active ]
     ).then( res => res.rows );
 };
 
 const updatePosition = function (id, position) {
     const { budgetid, title, description, planned, actual, priority } = position;
     return pool.query(
-        'UPDATE positions SET budgetid = $1, title = $2, description = $3, planned = $4, actual = $5, priority = $6 WHERE id = $7 RETURNING  id, budgetid, title, description, planned, actual, priority',
-        [budgetid, title, description, planned, actual, priority, id ]
+        'UPDATE positions SET budgetid = $1, title = $2, description = $3, planned = $4, actual = $5, priority = $6, active = $7 WHERE id = $8 RETURNING  id, budgetid, title, description, planned, actual, priority, active',
+        [budgetid, title, description, planned, actual, priority, active, id ]
     ).then( res => res.rows );
 };
 

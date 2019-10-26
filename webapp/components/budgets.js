@@ -313,7 +313,7 @@ const Budgets = {
                 <month-select v-bind:selected="currentMonth" v-on:modified="monthChanged($event)"></month-select>
             </div>
         </div>
-        <div v-if="budgetPresent" class="row">
+        <div v-if="budgetStatus === 'L'" class="row">
             <div class="col-lg-6 mb-2">
                 <div class="card h-100">
                     <div class="card-body">
@@ -337,8 +337,11 @@ const Budgets = {
                 </div>
             </div>    
         </div>
-        <div v-if="!budgetPresent" class="row">
+        <div v-if="budgetStatus === 'N'" class="row">
             Budget is not present
+        </div>
+        <div v-if="budgetStatus === 'U'" class="row">
+            Loading....
         </div>
     </div>
     `,
@@ -349,7 +352,7 @@ const Budgets = {
             positiveConfig: { positive: true },
             negativeConfig: { positive: false },
             currentMonth: { year: 2025, month: 6 },
-            budgetPresent: false
+            budgetStatus: 'U' // U - unloaded, L - loaded, N - not in DB, M - modified
         }
     }, // TODO: przyzapisywaniu do bazy pamietac, zeby negatywne zapisac z minusem
     created: function () {
@@ -359,6 +362,7 @@ const Budgets = {
     },
     methods: {
         monthChanged: function ( month ) {
+            this.budgetStatus = 'U';
             this.loadBudget( month.year, month.month );
         },
         loadBudget: function ( year, month ) {
@@ -376,12 +380,12 @@ const Budgets = {
                     pos.planned = Math.abs(pos.planned);
                     pos.actual = Math.abs(pos.actual);
                     });
-                    this.budgetPresent = true;
+                    this.budgetStatus = 'L';
                 } else {
-                    this.budgetPresent = false;
+                    this.budgetStatus = 'N';
                 }
             } ).catch( err => {
-                this.budgetPresent = false;
+                this.budgetStatus = 'N';
             } );
         }
     }

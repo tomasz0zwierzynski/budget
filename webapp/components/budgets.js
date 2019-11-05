@@ -338,10 +338,20 @@ const Budgets = {
             </div>    
         </div>
         <div v-if="budgetStatus === 'N'" class="row">
-            Budget is not present
+            <div class="col-6">
+                <div class="h6">
+                    Brak budżetu
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary"><i class="fas fa-pen mr-2"></i>Utwórz nowy budżet</button>
+                    <button type="button" class="btn btn-primary"><i class="fas fa-list mr-2"></i>Utwórz na podstawie subskrybcji</button>
+                </div>
+            </div>    
         </div>
         <div v-if="budgetStatus === 'U'" class="row">
-            Loading....
+            <div class="col">
+                <i class="fas fa-spinner fa-spin fa-3x"></i>
+            </div>
         </div>
     </div>
     `,
